@@ -1,0 +1,21 @@
+tools:
+  - name: run_cli_commands
+    type: function
+    description: Execute Command line program that accepts text input to execute system or machine.
+    parameters:
+      command:
+        type: string
+        description: command that should be get executed on machine.
+    required:
+      - command
+  - name: read_file
+    type: function
+    description: read the file.
+    parameters:
+      file_name:
+        type: string
+        description: name of the file to read content inside it
+    required:
+      - file_name
+
+
