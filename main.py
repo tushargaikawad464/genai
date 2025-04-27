@@ -18,81 +18,68 @@ def call_model(payload):
      
 
 def run_agent(payload):
-    count=0
-    summery=""
-    stop_reason=""
+    count = 0
+    summary = ""
+    stop_reason = ""
 
     while stop_reason != "end_turn":
-        count +=1
+        count += 1
         print("--------------Thinking---------", count)
-        response =  call_model(payload)
+        response = call_model(payload)
+        print("RESPONSE \n", response)
 
         ai_message = response["output"]["message"]
         stop_reason = response["stopReason"]
 
-        messasge_content = response["output"]["message"]["content"]
+        message_content = response["output"]["message"]["content"]
         payload["message"].append(ai_message)
 
-        for content in messasge_content:
+        for content in message_content:
             if "text" in content:
-                summery += content["text"] + "\n"
+                summary += content["text"] + "\n"
                 print("AI RESPONSE: ", content["text"])
 
         if stop_reason == "end_turn":
-            return messasge_content[0]["text"]
-            break
+            return message_content[0]["text"]
 
-        elif stop_reason == "tool_use":
-            action_dict = next(
-                (item for item in messasge_content if "toolUse" in item), None
-            )
+        if stop_reason == "tool_use":
+            tool_results = []
+            for content in message_content:
+                if "toolUse" not in content:
+                    continue
 
-            if action_dict is None:
-                payload["message"].append(
-                    {
-                        "role": "user",
-                        "content": [
-                            {
-                                "text": "Oberservation: No action has been performed, Finish your goal using tools available to you"
-                            }
-                        ]
-                    }
-                )
-                continue
-            
-            tool_use = action_dict["toolUse"]
-            func_name = tool_use.get("name")
-            func_input = tool_use.get("input", {})
+                tool_use = content["toolUse"]
+                func_name = tool_use.get("name")
+                func_input = tool_use.get("input", {})
 
+                tool_result = {
+                    "toolUseId": tool_use["toolUseId"],
+                    "status": "success",
+                    "content": "",
+                }
+                try:
+                    observation = execute_tools(func_name, func_input)
+                    tool_result["content"] = [{"text": observation}]
+                except Exception as e:
+                    tool_result["status"] = "failure"
+                    tool_result["content"] = [{"text": f"Some error occurred: {str(e)}"}]
 
-            tool_result = {
-                "toolUseId": tool_use["toolUseId"],
-                "status": "success",
-                "content": "",
-            }
+                tool_results.append({"toolResult": tool_result})
 
-
-            try:
-                oberservation = execute_tools(func_name, func_input)
-                tool_result["content"] = [{"text": oberservation}]
-
-            except Exception as e:
-                tool_result["content"] = [{"text": f"Some error occcured: {str(e)}"}]
-
-            message = {"role": "user", "content": [{"toolResult": tool_result}]}
+            message = {"role": "user", "content": tool_results}
             payload["message"].append(message)
-
-    return messasge_content[0]["text"]
-
+            print("payload: \n", payload)
+    return message_content[0]["text"]
+                
 if __name__ == "__main__":
     payload = {
-        "system": [{"text": "you are an ai assisant who ans only k8 releated questions"}],
+        "system": [{"text": "you are an ai assisant who ans only k8 releated questions, make your ans short and crisp"}],
         "message": [
             {
                 "role": "user",
                 "content":[
                     {
-                        "text": "what is the name of cluster running in my local,"
+                        "text": "what is the name of cluster running in my local, and how many namespace and pods are there"
                     }
                 ]
             }
