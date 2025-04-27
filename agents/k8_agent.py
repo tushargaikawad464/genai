@@ -59,14 +59,15 @@ def run_agent(payload):
 
                 tool_result = {
                     "toolUseId": tool_use["toolUseId"],
-                    "status": "success",
+                    "status": "",
                     "content": "",
                 }
                 try:
-                    observation = execute_tools(func_name, func_input)
+                    observation, status = execute_tools(func_name, func_input)
+                    tool_result["status"] = status
                     tool_result["content"] = [{"text": observation}]
                 except Exception as e:
-                    tool_result["status"] = "failure"
+                    tool_result["status"] = status
                     tool_result["content"] = [{"text": f"Some error occurred: {str(e)}"}]
 
                 tool_results.append({"toolResult": tool_result})

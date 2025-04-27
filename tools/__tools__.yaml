@@ -15,7 +15,11 @@ tools:
       file_name:
         type: string
         description: name of the file to read content inside it
+      file_path:
+        type: string
+        description: location of or path of file where its created
     required:
       - file_name
+      - file_path
 
 

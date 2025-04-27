@@ -11,6 +11,6 @@ def run_cli_commands(command):
             universal_newlines=True
         )
     except subprocess.CalledProcessError as exc:
-        return f"Command Status: FAIL, returncide: {exc.returncode}, Output: {exc.output}"
+        return f"returncide: {exc.returncode}, Output: {exc.output}", "error"
     else:
-        return f"Command Output: {output}"
+        return f"Command Output: {output}", "success"

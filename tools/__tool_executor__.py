@@ -10,7 +10,7 @@ env_vars = get_env_vars()
 def execute_tools(func_name, func_input=None):
     try:
         if func_name not in globals():
-            return f"Function '{func_name}' is not definded"
+            return f"Function '{func_name}' is not definded", "error"
         
         func = globals()[func_name]
 
@@ -25,4 +25,7 @@ def execute_tools(func_name, func_input=None):
     
     except Exception as e:
         return f"Error while executing function call '{func_name}' ERROR: {e}"
+    
+
+# result, status = execute_tools("run_cli_commands", "unsame -a")
     
