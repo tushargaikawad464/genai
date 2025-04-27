@@ -1,5 +1,8 @@
 import boto3
-from utils import get_env_vars
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from utils.utils import get_env_vars
 
 env_vars = get_env_vars()
 

@@ -1,4 +1,3 @@
-
 import os
 import yaml
 
@@ -6,8 +5,7 @@ import yaml
 def load_tools_config(platform):
     script_path = os.path.dirname(os.path.realpath(__file__))
 
-    file_path = f"{script_path}/tools.yaml"
-    with open(file_path) as f:
+    with open(f"{script_path}//__tools__.yaml") as f:
         raw_config = yaml.safe_load(f)
 
     tools = []

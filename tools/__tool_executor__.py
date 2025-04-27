@@ -1,4 +1,11 @@
-import subprocess
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from utils.utils import get_env_vars
+from tools.command_operation import run_cli_commands
+from tools.file_operation import read_file, write_file
+
+env_vars = get_env_vars()
 
 def execute_tools(func_name, func_input=None):
     try:
@@ -18,19 +25,4 @@ def execute_tools(func_name, func_input=None):
     
     except Exception as e:
         return f"Error while executing function call '{func_name}' ERROR: {e}"
-
-def run_cli_commands(command):
-    try:
-        output = subprocess.check_output(
-            command,
-            stderr=subprocess.STDOUT,
-            shell=True,
-            timeout=5,
-            universal_newlines=True
-        )
-    except subprocess.CalledProcessError as exc:
-        return f"Command Status: FAIL, returncide: {exc.returncode}, Output: {exc.output}"
-    else:
-        return f"Command Output: {output}"
-
-
+    

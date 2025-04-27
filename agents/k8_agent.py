@@ -1,8 +1,14 @@
-from bedrock import Bedrock
-from generate_tools import load_tools_config
-from utils import get_env_vars
-from knowledge_base import execute_tools
+import sys, os
 from rich import print
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from utils.utils import get_env_vars
+from tools.__tool_loader__ import load_tools_config
+from prompts.prompt_loader import get_prompt
+from core.model import Bedrock
+from tools.__tool_executor__ import execute_tools
+
 
 env_vars = get_env_vars()
 tools = load_tools_config(env_vars.get("PLATFORM"))
@@ -26,7 +32,6 @@ def run_agent(payload):
         count += 1
         print("--------------Thinking---------", count)
         response = call_model(payload)
-        print("RESPONSE \n", response)
 
         ai_message = response["output"]["message"]
         stop_reason = response["stopReason"]
@@ -72,19 +77,23 @@ def run_agent(payload):
     return message_content[0]["text"]
                 
 if __name__ == "__main__":
+
+
+    system_prompt = get_prompt(env_vars.get("SYSTEM_PROMPT_PATH"))
+    user_prompt = get_prompt(env_vars.get("USER_PROMPT_PATH"))
+
+
     payload = {
-        "system": [{"text": "you are an ai assisant who ans only k8 releated questions, make your ans short and crisp"}],
+        "system": [system_prompt],
         "message": [
             {
                 "role": "user",
-                "content":[
-                    {
-                        "text": "what is the name of cluster running in my local, and how many namespace and pods are there"
-                    }
-                ]
+                "content":[user_prompt]
             }
         ]
     }
+
+
     summary = run_agent(payload)
 
     print("\n######### INFORAMTION  ########\n")

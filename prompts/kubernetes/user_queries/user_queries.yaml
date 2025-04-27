@@ -1,0 +1,4 @@
+text: |
+  What is the name of the Kubernetes cluster running on my local machine?
+  How many namespaces exist?
+  Also, provide the total number of pods across all namespaces.
