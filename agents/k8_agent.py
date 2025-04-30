@@ -1,5 +1,6 @@
 import sys, os
 from rich import print
+import argparse
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -74,14 +75,20 @@ def run_agent(payload):
 
             message = {"role": "user", "content": tool_results}
             payload["message"].append(message)
-            print("payload: \n", payload)
+
     return message_content[0]["text"]
                 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--user-prompt", type=str, default=False, help="enter user prompt")
+    args = parser.parse_args()
 
-
+    if args.user_prompt:
+        user_prompt = {"text": args.user_prompt}
+    else:
+        user_prompt = get_prompt(env_vars.get("USER_PROMPT_PATH"))
+    
     system_prompt = get_prompt(env_vars.get("SYSTEM_PROMPT_PATH"))
-    user_prompt = get_prompt(env_vars.get("USER_PROMPT_PATH"))
 
 
     payload = {
